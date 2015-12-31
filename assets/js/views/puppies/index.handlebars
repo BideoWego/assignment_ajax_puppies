@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="col-xs-12">
+
+    <header class="page-header">
+      <h1>Puppies</h1>
+    </header>
+
+    <div class="well form">
+        <h1>Create a Puppy!</h1>
+        <form id="create-puppy">
+          <div class="form-group">
+            <label for="puppy-name">
+              Name
+            </label>
+            <input type="text" id="puppy_name" name="puppy[name]" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="puppy-breed-id">
+              Breed
+            </label>
+            <select id="puppy_breed_id" name="puppy[breed_id]">
+              {{#each breeds}}
+              <option value="{{ id }}">
+                {{ name }}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+          <input type="hidden" name="authenticity_token" value="k7xsidK5zfirkjIuVyw5EHfla9TOJkuLuIh59RkqkBQ=">
+          <button class="btn btn-primary" type="submit">
+            Create Puppy
+          </button>
+        </form>
+
+    </div>
+
+    <div class="well">
+      <ul id="puppies" class="list-group">
+        {{#each puppies}}
+        <li class="list-group-item">
+          <div class="puppy">
+            <p class="name">
+              {{ name }}
+            </p>
+            <p class="breed">
+              {{ breed.name }}
+            </p>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  $('#create-puppy').on('submit', $.proxy(puppiesController.create, puppiesController));
+</script>
+

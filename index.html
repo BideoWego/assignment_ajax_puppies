@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <!-- Bootstrap JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Handlebars -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+
+    <!-- My Styles -->
+    <link rel="stylesheet" href="/assets/stylesheets/style.css">
   </head>
   <body>
     <main class="container">
@@ -20,7 +27,34 @@
           AJAX and Puppies
         </h1>
       </header>
+      <div id="content">
+        <div class="alert alert-warning">
+          Waiting...
+        </div>
+        <div class="loading">
+          <div class="text-center">
+            <i class="fa fa-spinner fa-pulse fa-3x"></i>
+          </div>
+        </div>
+      </div>
     </main>
+
+    <script src="/assets/js/models/puppy-api.js"></script>
+    <script src="/assets/js/models/puppy.js"></script>
+    <script src="/assets/js/models/breed-api.js"></script>
+    <script src="/assets/js/models/breed.js"></script>
+    <script src="/assets/js/controllers/puppies-controller.js"></script>
+    <script>
+      var puppiesController;
+      $(document).ready(function(e) {
+
+        puppiesController = new PuppiesController({
+          element: '#content'
+        });
+        puppiesController.index();
+
+      });
+    </script>
   </body>
 </html>
 
