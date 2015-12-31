@@ -37,7 +37,7 @@
     <div class="well">
       <ul id="puppies" class="list-group">
         {{#each puppies}}
-        <li class="list-group-item">
+        <li id="puppy-{{ id }}" class="list-group-item">
           <div class="puppy">
             <p class="name">
               {{ name }}
@@ -45,6 +45,7 @@
             <p class="breed">
               {{ breed.name }}
             </p>
+            <a href="#" class="text-danger puppy-delete-link" data-id="{{ id }}">Delete</a>
           </div>
         </li>
         {{/each}}
@@ -56,5 +57,6 @@
 
 <script>
   $('#create-puppy').on('submit', $.proxy(puppiesController.create, puppiesController));
+  $('.puppy-delete-link').on('click', $.proxy(puppiesController.destroy, puppiesController));
 </script>
 

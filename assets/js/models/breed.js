@@ -37,6 +37,10 @@ var Breed = (function(BreedAPI, $) {
     BreedAPI.remove(id, _callback);
   };
 
+  Breed.error = function() {
+    return BreedAPI.error;
+  };
+
   return Breed;
 
 })(BreedAPI, $);

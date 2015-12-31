@@ -6,12 +6,16 @@ var PuppyAPI = (function($) {
 
   var PuppyAPI = function PuppyAPI() {};
 
+  PuppyAPI.error = null;
+
   PuppyAPI.list = function(callback) {
+    PuppyAPI.error = null;
     $.ajax({
       url: END_POINT,
       success: callback,
       context: this,
       error: function(xhr, status, error) {
+        PuppyAPI.error = error;
         console.error(error);
       }
     });
@@ -25,19 +29,21 @@ var PuppyAPI = (function($) {
       success: callback,
       context: this,
       error: function(xhr, status, error) {
+        PuppyAPI.error = error;
         console.error(error);
       }
     });
   };
 
-  PuppyAPI.remove = function(data, callback) {
-    var url = END_POINT.replace('.json', '/' + data.id + '.json')
+  PuppyAPI.remove = function(id, callback) {
+    var url = END_POINT.replace('.json', '/' + id + '.json')
     $.ajax({
       url: url,
       method: 'DELETE',
       success: callback,
       context: this,
       error: function(xhr, status, error) {
+        PuppyAPI.error = error;
         console.error(error);
       }
     });

@@ -9,16 +9,19 @@ var PuppiesController = (function($) {
   PuppiesController.prototype.index = function() {
     var puppies = Puppy.all();
     var breeds = Breed.all();
+    var data = {
+      puppies: puppies,
+      breeds: breeds
+    };
+    var view = 'puppies/index';
     if (puppies.length === 0) {
+      view = 'shared/loading';
       Puppy.refresh($.proxy(this.index, this));
     } else if (breeds.length === 0) {
+      view = 'shared/loading';
       Breed.refresh($.proxy(this.index, this));
-    } else {
-      this.render('index', {
-        puppies: puppies,
-        breeds: breeds
-      });
     }
+    this.render(view, data);
   };
 
   PuppiesController.prototype.create = function(e) {
@@ -32,20 +35,29 @@ var PuppiesController = (function($) {
       var puppy = data;
       puppy.breed = breed;
       Puppy.insert(puppy);
-      that.render('_puppy', puppy, $('#puppies'), 'append');
+      that.render('puppies/_puppy', puppy, $('#puppies'), 'append');
     });
 
     return false;
   };
 
-  PuppiesController.prototype.destroy = function(id) {
-    Puppy.destroy(id);
+  PuppiesController.prototype.destroy = function(e) {
+    e.preventDefault();
+
+    var id = $(e.target).attr('data-id');
+    id = parseInt(id);
+
+    Puppy.destroy(id, function() {
+      $('#puppy-' + id).remove();
+    });
+
+    return false;
   };
 
   PuppiesController.prototype.render = function(view, data, $element, func) {
     var $element = ($element) ? $element : this.$element;
     var func = (func) ? func : 'html';
-    var url = '/assets/js/views/puppies/' + view + '.handlebars';
+    var url = '/assets/js/views/' + view + '.handlebars';
     var that = this;
     $.ajax({
       url: url,
