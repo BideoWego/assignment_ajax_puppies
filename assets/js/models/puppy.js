@@ -1,25 +1,105 @@
 "use strict";
 
-var Puppy = (function(PuppyAPI, $) {
+var Puppy = (function($) {
 
+  // The target URL for CRUD
+  var END_POINT = 'https://ajax-puppies.herokuapp.com/puppies.json';
+
+  // Array to cache results
   var _table = [];
 
   var Puppy = function Puppy() {};
 
-  Puppy.refresh = function(callback) {
-    PuppyAPI.list(function(data) {
-      _table = data;
+  // Send an AJAX request with
+  // listener as context for callbacks
+  // and add a progress event
+  var _sendAJAX = function(listener, options, onSuccess) {
+    var progress = options['progress'];
+    options['xhr'] = function() {
+      var xhr = $.ajaxSettings.xhr();
+      xhr.addEventListener('progress', function(e) {
+        if (progress) {
+          progress.call(listener, e);
+        }
+      });
+      return xhr;
+    };
 
-      if (callback) {
-        callback();
+    var success = options['success'];
+    options['success'] = function(data, status, xhr) {
+      onSuccess(data, status, xhr);
+
+      if (success) {
+        success.call(listener, data, status, xhr);
       }
-    });
+    };
+
+    $.ajax(options);
   };
 
+  // Get all records
   Puppy.all = function() {
     return _table;
   };
 
+  // Refresh the cache from the API
+  // Set the listener and callbacks
+  // for the AJAX request
+  Puppy.refresh = function(listener, callbacks) {
+    var options = {
+      url: END_POINT,
+      context: listener
+    };
+
+    options = $.extend(options, callbacks);
+
+    _sendAJAX(listener, options, function(data) {
+      _table = data;
+    });
+  };
+
+  // Create a record through API
+  // pass it the given data
+  // set the callback listener
+  // and callbacks
+  Puppy.create = function(data, listener, callbacks) {
+    var options = {
+      url: END_POINT,
+      context: listener,
+      method: 'POST',
+      data: data
+    };
+
+    options = $.extend(options, callbacks);
+
+    _sendAJAX(listener, options, function(data) {
+      var breed = Breed.find(data['breed_id']);
+      var puppy = data;
+      puppy.breed = breed;
+      Puppy.insert(puppy);
+    });
+  };
+
+  // Destroy a record through API
+  // given the ID
+  // set the callback listener
+  // and callbacks
+  Puppy.destroy = function(id, listener, callbacks) {
+    var options = {
+      url: END_POINT.replace('.json', '/' + id + '.json'),
+      context: listener,
+      method: 'DELETE'
+    };
+
+    options = $.extend(options, callbacks);
+
+    _sendAJAX(listener, options, function(data) {
+      Puppy.remove(data.id);
+    });
+  };
+
+  // Find a record in the cache
+  // by its ID
   Puppy.find = function(id) {
     for (var i = 0; i < _table.length; i++) {
       var puppy = _table[i];
@@ -29,10 +109,12 @@ var Puppy = (function(PuppyAPI, $) {
     }
   };
 
+  // Insert a record into the cache
   Puppy.insert = function(puppy) {
     _table.push(puppy);
   };
 
+  // Remove a record from the cache
   Puppy.remove = function(id) {
     var record;
     for (var i = 0; i < _table.length; i++) {
@@ -44,20 +126,7 @@ var Puppy = (function(PuppyAPI, $) {
     return record;
   };
 
-  Puppy.create = function(data, callback) {
-    PuppyAPI.add(data, callback);
-  };
-
-  Puppy.destroy = function(id, callback) {
-    PuppyAPI.remove(id, callback);
-    return this.remove(id);
-  };
-
-  Puppy.error = function() {
-    return PuppyAPI.error;
-  };
-
   return Puppy;
 
-})(PuppyAPI, $);
+})($);
 

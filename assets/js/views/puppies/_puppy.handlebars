@@ -1,11 +1,12 @@
-<li class="list-group-item">
+<li id="puppy-{{ puppy.id }}" class="list-group-item">
   <div class="puppy">
     <p class="name">
-      {{ name }}
+      {{ puppy.name }}
     </p>
     <p class="breed">
-      {{ breed.name }}
+      {{ puppy.breed.name }}
     </p>
+    <a href="#" class="text-danger puppy-delete-link" data-id="{{ puppy.id }}">Adopt</a>
   </div>
 </li>
 

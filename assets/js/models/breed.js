@@ -1,47 +1,75 @@
 "use strict";
 
-var Breed = (function(BreedAPI, $) {
+var Breed = (function($) {
 
+  // The target URL for CRUD
+  var END_POINT = 'https://ajax-puppies.herokuapp.com/breeds.json';
+
+  // Array to cache results
   var _table = [];
-  var _callback = null;
 
-  var Breed = function Breed() {};
+  // Send an AJAX request with
+  // listener as context for callbacks
+  // and add a progress event
+  var _sendAJAX = function(listener, options, onSuccess) {
+    var progress = options['progress'];
+    options['xhr'] = function() {
+      var xhr = $.ajaxSettings.xhr();
+      xhr.addEventListener('progress', function(e) {
+        if (progress) {
+          progress.call(listener, e);
+        }
+      });
+      return xhr;
+    };
 
-  Breed.refresh = function(callback) {
-    _callback = callback;
+    var success = options['success'];
+    options['success'] = function(data, status, xhr) {
+      onSuccess(data, status, xhr);
 
-    BreedAPI.list(function(data) {
-      _table = data;
-      _callback();
-    });
+      if (success) {
+        success.call(listener, data, status, xhr);
+      }
+    };
+
+    $.ajax(options);
   };
 
+  var Breed = function Breed() {};
+  
+  // Get all records
   Breed.all = function() {
     return _table;
   };
 
+  // Refresh the cache from the API
+  // Set the listener and callbacks
+  // for the AJAX request
+  Breed.refresh = function(listener, callbacks) {
+    var options = {
+      url: END_POINT,
+      context: listener
+    };
+
+    options = $.extend(options, callbacks);
+
+    _sendAJAX(listener, options, function(data) {
+      _table = data;
+    });
+  };
+
+  // Find a record in the cache
+  // by its ID
   Breed.find = function(id) {
     for (var i = 0; i < _table.length; i++) {
-      var puppy = _table[i];
-      if (puppy.id === id) {
-        return puppy;
+      var breed = _table[i];
+      if (breed.id === id) {
+        return breed;
       }
     }
   };
 
-  Breed.create = function(data) {
-    BreedAPI.add(data, _callback);
-  };
-
-  Breed.destroy = function(id) {
-    BreedAPI.remove(id, _callback);
-  };
-
-  Breed.error = function() {
-    return BreedAPI.error;
-  };
-
   return Breed;
 
-})(BreedAPI, $);
+})($);
 

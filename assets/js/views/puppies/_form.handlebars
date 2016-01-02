@@ -1,0 +1,29 @@
+<div class="well form">
+    <h1>Create a Puppy!</h1>
+    <form id="create-puppy">
+      <div class="form-group">
+        <label for="puppy-name">
+          Name
+        </label>
+        <input type="text" id="puppy_name" name="puppy[name]" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="puppy-breed-id">
+          Breed
+        </label>
+        <select id="puppy_breed_id" name="puppy[breed_id]">
+          {{#each breeds}}
+          <option value="{{ id }}">
+            {{ name }}
+          </option>
+          {{/each}}
+        </select>
+      </div>
+      <input type="hidden" name="authenticity_token" value="k7xsidK5zfirkjIuVyw5EHfla9TOJkuLuIh59RkqkBQ=">
+      <button class="btn btn-primary" type="submit">
+        Create Puppy
+      </button>
+    </form>
+
+</div>
+
